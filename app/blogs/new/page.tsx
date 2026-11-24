@@ -1,26 +1,49 @@
-import { createBlog } from "../../actions/blogs"
+"use client"
 
-const NewBlogPage = () => {
+import { useActionState } from "react"
+import { createBlog } from "@/app/actions/blogs"
+
+export default function NewBlogPage() {
+  const [state, formAction] = useActionState(createBlog, {})
   return (
     <div>
-      <h2>create new blog</h2>
-      <form action={createBlog}>
+      <h1 className="mb-4 text-2xl font-bold">Create a new blog</h1>
+      <form action={formAction}>
         <div>
-          <label htmlFor="title">title</label>
-          <input id="title" type="text" name="title" required />
+          <label htmlFor="title">Title</label>
+          <input className="w-full rounded border border-slate-300 px-2 py-1"
+            id="title"
+            name="title"
+            type="text"
+            required
+            defaultValue={state.title ?? ""}
+          />
         </div>
         <div>
-          <label htmlFor="author">author</label>
-          <input id="author" type="text" name="author" required />
+          <label htmlFor="author">Author</label>
+          <input className="w-full rounded border border-slate-300 px-2 py-1"
+            id="author"
+            name="author"
+            type="text"
+            required
+            defaultValue={state.author ?? ""}
+          />
         </div>
         <div>
-          <label htmlFor="url">url</label>
-          <input id="url" type="text" name="url" required />
+          <label htmlFor="url">URL</label>
+          <input className="w-full rounded border border-slate-300 px-2 py-1"
+            id="url"
+            name="url"
+            type="text"
+            required
+            defaultValue={state.url ?? ""}
+          />
         </div>
-        <button type="submit">create</button>
+        {state.error && <p>{state.error}</p>}
+        <button type="submit" data-testid="create-blog-button" className="rounded bg-slate-800 px-3 py-1 text-white">
+          Create
+        </button>
       </form>
     </div>
   )
 }
-
-export default NewBlogPage

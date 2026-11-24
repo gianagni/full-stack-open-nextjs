@@ -1,54 +1,46 @@
-export type Blog = {
-  id: number
+import { eq, ilike, or } from "drizzle-orm"
+import { db } from "@/db"
+import { blogs } from "@/db/schema"
+import type { Blog } from "@/db/schema"
+
+export type { Blog }
+
+export async function getBlogs(filter?: string): Promise<Blog[]> {
+  if (filter) {
+    const pattern = `%${filter}%`
+    return db
+      .select()
+      .from(blogs)
+      .where(or(ilike(blogs.title, pattern), ilike(blogs.author, pattern)))
+  }
+  return db.select().from(blogs)
+}
+
+export async function getBlogById(id: number) {
+  const [blog] = await db.select().from(blogs).where(eq(blogs.id, id))
+  return blog ?? null
+}
+
+export async function addBlog(blog: {
   title: string
   author: string
   url: string
-  likes: number
+  userId?: number | null
+}) {
+  const [created] = await db
+    .insert(blogs)
+    .values({ ...blog, likes: 0 })
+    .returning()
+  return created
 }
 
-const blogs: Blog[] = [
-  {
-    id: 1,
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7,
-  },
-  {
-    id: 2,
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5,
-  },
-  {
-    id: 3,
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    likes: 12,
-  },
-]
-
-export const getBlogs = () => {
-  return [...blogs]
-}
-
-export const getBlogById = (id: number) => {
-  return blogs.find((blog) => blog.id === id)
-}
-
-export const addBlog = (title: string, author: string, url: string) => {
-  const id = Math.max(...blogs.map((blog) => blog.id)) + 1
-  const blog: Blog = { id, title, author, url, likes: 0 }
-  blogs.push(blog)
-  return blog
-}
-
-export const likeBlog = (id: number) => {
-  const blog = blogs.find((blog) => blog.id === id)
-  if (blog) {
-    blog.likes += 1
-  }
-  return blog
+export async function likeBlog(id: number) {
+  const blog = await getBlogById(id)
+  if (!blog) return null
+  const [updated] = await db
+    .update(blogs)
+    .set({ likes: blog.likes + 1 })
+    .where(eq(blogs.id, id))
+    .returning()
+  return updated
 }

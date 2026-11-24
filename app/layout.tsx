@@ -1,25 +1,24 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import "./globals.css"
+import NavBar from "@/app/components/NavBar"
+import Notification from "@/app/components/Notification"
 
 export const metadata: Metadata = {
   title: "Blog app",
-  description: "An example app for Full Stack Open: Next.js course",
+  description: "Blog application built with Next.js",
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
     <html lang="en">
       <body>
-        <div>
-          <Link href="/">home</Link> | <Link href="/blogs">blogs</Link> |{" "}
-          <Link href="/blogs/new">new blog</Link>
-        </div>
-        {children}
+        <NavBar />
+        <Notification />
+        <main>{children}</main>
       </body>
     </html>
   )
