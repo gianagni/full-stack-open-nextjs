@@ -1,0 +1,26 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 2rem;
+  line-height: 1.5;
+}
+
+a {
+  color: #1a0dab;
+}
+
+form div {
+  margin-bottom: 0.5rem;
+}
+
+label {
+  display: block;
+}
+
+input {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+button {
+  margin-top: 0.5rem;
+}
